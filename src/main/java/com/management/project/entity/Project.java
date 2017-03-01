@@ -9,10 +9,19 @@ package com.management.project.entity;
  */
 public final class Project extends Model {
 
+    /**
+     * The project cost.
+     */
     private int cost;
 
+    /**
+     * The company that owns the project.
+     */
     private Company company;
 
+    /**
+     * The customer of the project.
+     */
     private Customer customer;
 
     /**

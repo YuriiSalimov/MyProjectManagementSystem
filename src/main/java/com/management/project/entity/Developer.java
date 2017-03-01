@@ -14,22 +14,22 @@ import java.util.Set;
 public final class Developer extends Model {
 
     /**
-     *
+     * The developer salary.
      */
     private int salary;
 
     /**
-     *
+     * The company, which employs this developer.
      */
     private Company company;
 
     /**
-     *
+     * The project, on which the developer is working.
      */
     private Project project;
 
     /**
-     *
+     * The developer skills.
      */
     private Set<Skill> skills = new HashSet<>();
 
