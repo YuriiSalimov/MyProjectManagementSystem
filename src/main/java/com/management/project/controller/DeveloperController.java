@@ -62,7 +62,7 @@ public final class DeveloperController extends ModelController<Developer> {
         System.out.println("^^^^^^^^^^^^^^^");
         System.out.println("ADD NEW DEVELOPER");
         System.out.println("---------------");
-        this.developerDao.add(prepareDeveloper());
+        this.developerDao.add(prepareDeveloper(true));
     }
 
     @Override
@@ -73,7 +73,7 @@ public final class DeveloperController extends ModelController<Developer> {
         System.out.print("Input developer id: ");
         long id = SCANNER.nextLong();
         SCANNER.nextLine();
-        Developer developer = prepareDeveloper();
+        Developer developer = prepareDeveloper(false);
         developer.setId(id);
         this.developerDao.update(developer);
     }
@@ -91,18 +91,20 @@ public final class DeveloperController extends ModelController<Developer> {
         return new Developer();
     }
 
-    private Developer prepareDeveloper() throws SQLException {
+    private Developer prepareDeveloper(boolean isNew) throws SQLException {
         Developer developer = new Developer();
         System.out.print("Input developer name: ");
         developer.setName(SCANNER.nextLine());
         System.out.print("Input developer salary: ");
         developer.setSalary(SCANNER.nextInt());
         SCANNER.nextLine();
-        System.out.print("Input skill ids (in line): ");
-        String skillIds = SCANNER.nextLine();
-        for (String skillId : skillIds.split(",")) {
-            Skill skill = this.skillDao.get(Long.parseLong(skillId));
-            developer.addSkill(skill);
+        if (!isNew) {
+            System.out.print("Input skill ids (example, 1,2,3...): ");
+            String skillIds = SCANNER.nextLine().replaceAll(" ", "");
+            for (String skillId : skillIds.split(",")) {
+                Skill skill = this.skillDao.get(Long.parseLong(skillId));
+                developer.addSkill(skill);
+            }
         }
         System.out.print("Input company id: ");
         long companyId = SCANNER.nextLong();

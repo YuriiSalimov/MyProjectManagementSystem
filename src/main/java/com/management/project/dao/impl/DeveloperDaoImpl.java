@@ -43,7 +43,6 @@ public final class DeveloperDaoImpl extends ModelDaoImpl<Developer> implements D
 
     @Override
     public void add(Developer developer) throws SQLException {
-        saveFields(developer);
         String sql = "INSERT INTO developers (name, salary, company_id, project_id) VALUES(?, ?, ?,?)";
         try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
             prepareStatement(statement, developer);
@@ -53,7 +52,7 @@ public final class DeveloperDaoImpl extends ModelDaoImpl<Developer> implements D
 
     @Override
     public void update(Developer developer) throws SQLException {
-        String sql = "UPDATE developers SET name = ?, salary = ?, company_id= ?, project_id= ? WHERE id = ?";
+        String sql = "UPDATE developers SET name = ?, salary = ?, company_id = ?, project_id = ? WHERE id = ?";
         try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
             statement.setString(1, developer.getName());
             statement.setInt(2, developer.getSalary());
@@ -90,15 +89,6 @@ public final class DeveloperDaoImpl extends ModelDaoImpl<Developer> implements D
     @Override
     protected String getTableName() {
         return "developers";
-    }
-
-    private void saveFields(Developer developer) throws SQLException {
-        if (!this.companyDao.exist(developer.getCompany())) {
-            this.companyDao.add(developer.getCompany());
-        }
-        if (!this.projectDao.exist(developer.getProject())) {
-            this.projectDao.add(developer.getProject());
-        }
     }
 
     private static void prepareStatement(PreparedStatement statement, Developer developer) throws SQLException {
