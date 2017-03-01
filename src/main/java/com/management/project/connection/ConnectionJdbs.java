@@ -36,6 +36,7 @@ public final class ConnectionJdbs implements ConnectionDB {
         return this.connection;
     }
 
+    @Override
     public void close() throws SQLException {
         if (this.connection != null) {
             this.connection.close();

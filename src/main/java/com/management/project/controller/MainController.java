@@ -1,5 +1,6 @@
 package com.management.project.controller;
 
+import com.management.project.fabrica.FactoryConnection;
 import com.management.project.fabrica.FactoryController;
 
 import java.sql.SQLException;
@@ -47,6 +48,7 @@ public final class MainController extends AbstractController {
                 this.skillController.startMenu();
                 break;
             default:
+                FactoryConnection.getConnectionJdbs().close();
                 System.exit(0);
         }
     }
