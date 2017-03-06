@@ -1,5 +1,10 @@
 package com.management.project.entity;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
+import javax.persistence.*;
+
 /**
  * The class implements a set of standard methods for working
  * with entity of the Project.
@@ -7,21 +12,36 @@ package com.management.project.entity;
  * @author Yurii Salimov (yuriy.alex.salimov@gmail.com)
  * @version 1.0
  */
+@Entity
+@Table(name = "projects")
 public final class Project extends Model {
 
     /**
      * The project cost.
      */
+    @Column(name = "cost", nullable = false)
     private int cost;
 
     /**
      * The company that owns the project.
      */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(
+            name = "company_id",
+            referencedColumnName = "id"
+    )
+    @Fetch(FetchMode.JOIN)
     private Company company;
 
     /**
      * The customer of the project.
      */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(
+            name = "customer_id",
+            referencedColumnName = "id"
+    )
+    @Fetch(FetchMode.JOIN)
     private Customer customer;
 
     /**

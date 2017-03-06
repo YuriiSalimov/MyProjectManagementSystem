@@ -12,19 +12,19 @@ import java.util.Collection;
  */
 public interface ModelDao<T extends Model> {
 
-    T get(long id) throws SQLException;
+    T get(long id);
 
-    Collection<T> getAll() throws SQLException;
+    Collection<T> getAll();
 
-    void add(T model) throws SQLException;
+    void add(T model);
 
-    void addAll(Collection<T> models) throws SQLException;
+    void addAll(Collection<T> models);
 
-    void update(T model) throws SQLException;
+    void update(T model);
 
-    void remove(long id) throws SQLException;
+    void remove(long id);
 
-    void remove(T model) throws SQLException;
+    void remove(T model);
 
-    boolean exist(T model) throws SQLException;
+    boolean exist(T model);
 }

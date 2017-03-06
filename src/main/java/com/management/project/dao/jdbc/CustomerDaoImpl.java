@@ -1,6 +1,6 @@
-package com.management.project.dao.impl;
+package com.management.project.dao.jdbc;
 
-import com.management.project.connection.ConnectionDB;
+import com.management.project.connection.ConnectionJdbc;
 import com.management.project.dao.CustomerDao;
 import com.management.project.entity.Customer;
 
@@ -18,15 +18,19 @@ public final class CustomerDaoImpl extends ModelDaoImpl<Customer> implements Cus
         super(connection);
     }
 
-    public CustomerDaoImpl(ConnectionDB connectionDB) throws SQLException {
-        super(connectionDB.getConnection());
+    public CustomerDaoImpl(ConnectionJdbc connectionJdbc) {
+        super(connectionJdbc.getConnection());
     }
 
     @Override
-    protected Customer prepare(ResultSet resultSet) throws SQLException {
+    protected Customer prepare(ResultSet resultSet) {
         Customer customer = new Customer();
-        customer.setId(resultSet.getLong("id"));
-        customer.setName(resultSet.getString("name"));
+        try {
+            customer.setId(resultSet.getLong("id"));
+            customer.setName(resultSet.getString("name"));
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
         return customer;
     }
 

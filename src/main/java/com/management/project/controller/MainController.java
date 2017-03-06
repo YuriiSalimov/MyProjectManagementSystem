@@ -1,5 +1,6 @@
 package com.management.project.controller;
 
+import com.management.project.connection.ConnectionType;
 import com.management.project.fabrica.FactoryConnection;
 import com.management.project.fabrica.FactoryController;
 
@@ -21,12 +22,12 @@ public final class MainController extends AbstractController {
 
     private final SkillController skillController;
 
-    public MainController() throws SQLException {
-        this.companyController = FactoryController.getCompanyController();
-        this.customerController = FactoryController.getCustomerController();
-        this.developerController = FactoryController.getDeveloperController();
-        this.projectController = FactoryController.getProjectController();
-        this.skillController = FactoryController.getSkillController();
+    public MainController(final ConnectionType type) throws SQLException {
+        this.companyController = FactoryController.getCompanyController(type);
+        this.customerController = FactoryController.getCustomerController(type);
+        this.developerController = FactoryController.getDeveloperController(type);
+        this.projectController = FactoryController.getProjectController(type);
+        this.skillController = FactoryController.getSkillController(type);
     }
 
     @Override
@@ -48,7 +49,7 @@ public final class MainController extends AbstractController {
                 this.skillController.startMenu();
                 break;
             default:
-                FactoryConnection.getConnectionJdbs().close();
+                FactoryConnection.getConnectionJdbcImpl().close();
                 System.exit(0);
         }
     }

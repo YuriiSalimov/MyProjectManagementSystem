@@ -1,8 +1,7 @@
 package com.management.project.fabrica;
 
+import com.management.project.connection.ConnectionType;
 import com.management.project.controller.*;
-
-import java.sql.SQLException;
 
 /**
  * @author Yurii Salimov (yuriy.alex.salimov@gmail.com)
@@ -24,67 +23,67 @@ public final class FactoryController {
 
     }
 
-    public static CompanyController getCompanyController() throws SQLException {
+    public static CompanyController getCompanyController(final ConnectionType type) {
         if (companyController == null) {
-            initCompanyController();
+            initCompanyController(type);
         }
         return companyController;
     }
 
-    public static CustomerController getCustomerController() throws SQLException {
+    public static CustomerController getCustomerController(final ConnectionType type)  {
         if (customerController == null) {
-            initCustomerController();
+            initCustomerController(type);
         }
         return customerController;
     }
 
-    public static DeveloperController getDeveloperController() throws SQLException {
+    public static DeveloperController getDeveloperController(final ConnectionType type) {
         if (developerController == null) {
-            initDeveloperController();
+            initDeveloperController(type);
         }
         return developerController;
     }
 
-    public static ProjectController getProjectController() throws SQLException {
+    public static ProjectController getProjectController(final ConnectionType type)  {
         if (projectController == null) {
-            initProjectController();
+            initProjectController(type);
         }
         return projectController;
     }
 
-    public static SkillController getSkillController() throws SQLException {
+    public static SkillController getSkillController(final ConnectionType type)  {
         if (skillController == null) {
-            initSkillController();
+            initSkillController(type);
         }
         return skillController;
     }
 
-    private static void initCompanyController() throws SQLException {
-        companyController = new CompanyController(FactoryDao.getCompanyDao());
+    private static void initCompanyController(final ConnectionType type)  {
+        companyController = new CompanyController(FactoryDao.getCompanyDao(type));
     }
 
-    private static void initCustomerController() throws SQLException {
-        customerController = new CustomerController(FactoryDao.getCustomerDao());
+    private static void initCustomerController(final ConnectionType type)  {
+        customerController = new CustomerController(FactoryDao.getCustomerDao(type));
     }
 
-    private static void initDeveloperController() throws SQLException {
+    private static void initDeveloperController(final ConnectionType type)  {
         developerController = new DeveloperController(
-                FactoryDao.getDeveloperDao(),
-                FactoryDao.getCompanyDao(),
-                FactoryDao.getProjectDao(),
-                FactoryDao.getSkillDao()
+                FactoryDao.getDeveloperDao(type),
+                FactoryDao.getCompanyDao(type),
+                FactoryDao.getProjectDao(type),
+                FactoryDao.getSkillDao(type)
         );
     }
 
-    private static void initProjectController() throws SQLException {
+    private static void initProjectController(final ConnectionType type)  {
         projectController = new ProjectController(
-                FactoryDao.getProjectDao(),
-                FactoryDao.getCompanyDao(),
-                FactoryDao.getCustomerDao()
+                FactoryDao.getProjectDao(type),
+                FactoryDao.getCompanyDao(type),
+                FactoryDao.getCustomerDao(type)
         );
     }
 
-    private static void initSkillController() throws SQLException {
-        skillController = new SkillController(FactoryDao.getSkillDao());
+    private static void initSkillController(final ConnectionType type)  {
+        skillController = new SkillController(FactoryDao.getSkillDao(type));
     }
 }

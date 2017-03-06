@@ -1,5 +1,6 @@
 package com.management.project.entity;
 
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -9,6 +10,7 @@ import java.io.Serializable;
  * @author Yurii Salimov (yuriy.alex.salimov@gmail.com)
  * @version 1.0
  */
+@MappedSuperclass
 public abstract class Model implements Serializable {
 
     /**
@@ -22,11 +24,15 @@ public abstract class Model implements Serializable {
     /**
      * The unique identifier for each object.
      */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private long id;
 
     /**
      * The name of this model.
      */
+    @Column(name = "name", nullable = false)
     private String name;
 
     /**

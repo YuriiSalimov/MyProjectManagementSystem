@@ -12,8 +12,8 @@ import java.util.Collection;
  */
 public interface SkillDao extends ModelDao<Skill> {
 
-    void addDeveloperSkills(Developer developer) throws SQLException;
+    void addDeveloperSkills(Developer developer);
 
-    Collection<Skill> getDeveloperSkills(Developer developer) throws SQLException;
+    Collection<Skill> getDeveloperSkills(Developer developer);
 }
 

@@ -1,6 +1,6 @@
-package com.management.project.dao.impl;
+package com.management.project.dao.jdbc;
 
-import com.management.project.connection.ConnectionDB;
+import com.management.project.connection.ConnectionJdbc;
 import com.management.project.dao.CompanyDao;
 import com.management.project.dao.CustomerDao;
 import com.management.project.dao.ProjectDao;
@@ -32,49 +32,57 @@ public final class ProjectDaoImpl extends ModelDaoImpl<Project> implements Proje
     }
 
     public ProjectDaoImpl(
-            ConnectionDB connectionDB,
+            ConnectionJdbc connectionJdbc,
             CompanyDao companyDao,
             CustomerDao customerDao
-    ) throws SQLException {
-        this(connectionDB.getConnection(), companyDao, customerDao);
+    ) {
+        this(connectionJdbc.getConnection(), companyDao, customerDao);
     }
 
     @Override
-    public void add(Project project) throws SQLException {
+    public void add(Project project) {
         saveFields(project);
         String sql = "INSERT INTO projects (name, cost, company_id, customer_id) VALUES(?, ?, ?, ?)";
         try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
             prepareStatement(statement, project);
             statement.executeUpdate();
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
         }
     }
 
     @Override
-    public void update(Project project) throws SQLException {
+    public void update(Project project) {
         String sql = "UPDATE projects SET name = ?, cost = ?, company_id = ?, customer_id = ? WHERE id = ?";
         try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
             prepareStatement(statement, project);
             statement.setLong(5, project.getId());
             statement.executeUpdate();
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
         }
     }
 
     @Override
-    protected Project prepare(ResultSet resultSet) throws SQLException {
+    protected Project prepare(ResultSet resultSet) {
         Project project = new Project();
-        project.setId(resultSet.getLong("id"));
-        project.setName(resultSet.getString("name"));
-        project.setCost(resultSet.getInt("cost"));
-        project.setCompany(
-                this.companyDao.get(
-                        resultSet.getLong("company_id")
-                )
-        );
-        project.setCustomer(
-                this.customerDao.get(
-                        resultSet.getLong("customer_id")
-                )
-        );
+        try {
+            project.setId(resultSet.getLong("id"));
+            project.setName(resultSet.getString("name"));
+            project.setCost(resultSet.getInt("cost"));
+            project.setCompany(
+                    this.companyDao.get(
+                            resultSet.getLong("company_id")
+                    )
+            );
+            project.setCustomer(
+                    this.customerDao.get(
+                            resultSet.getLong("customer_id")
+                    )
+            );
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
         return project;
     }
 
@@ -83,7 +91,7 @@ public final class ProjectDaoImpl extends ModelDaoImpl<Project> implements Proje
         return "projects";
     }
 
-    private void saveFields(Project project) throws SQLException {
+    private void saveFields(Project project) {
         if (!this.companyDao.exist(project.getCompany())) {
             this.companyDao.add(project.getCompany());
         }
@@ -92,10 +100,14 @@ public final class ProjectDaoImpl extends ModelDaoImpl<Project> implements Proje
         }
     }
 
-    private static void prepareStatement(PreparedStatement statement, Project project) throws SQLException {
-        statement.setString(1, project.getName());
-        statement.setInt(2, project.getCost());
-        statement.setLong(3, project.getCompany().getId());
-        statement.setLong(4, project.getCustomer().getId());
+    private static void prepareStatement(PreparedStatement statement, Project project) {
+        try {
+            statement.setString(1, project.getName());
+            statement.setInt(2, project.getCost());
+            statement.setLong(3, project.getCompany().getId());
+            statement.setLong(4, project.getCustomer().getId());
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 }

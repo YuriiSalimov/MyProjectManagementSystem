@@ -1,6 +1,6 @@
-package com.management.project.dao.impl;
+package com.management.project.dao.jdbc;
 
-import com.management.project.connection.ConnectionDB;
+import com.management.project.connection.ConnectionJdbc;
 import com.management.project.dao.CompanyDao;
 import com.management.project.entity.Company;
 
@@ -18,15 +18,19 @@ public final class CompanyDaoImpl extends ModelDaoImpl<Company> implements Compa
         super(connection);
     }
 
-    public CompanyDaoImpl(ConnectionDB connectionDB) throws SQLException {
-        super(connectionDB.getConnection());
+    public CompanyDaoImpl(ConnectionJdbc connectionJdbc) {
+        super(connectionJdbc.getConnection());
     }
 
     @Override
-    protected Company prepare(ResultSet resultSet) throws SQLException {
+    protected Company prepare(ResultSet resultSet) {
         Company company = new Company();
-        company.setId(resultSet.getLong("id"));
-        company.setName(resultSet.getString("name"));
+        try {
+            company.setId(resultSet.getLong("id"));
+            company.setName(resultSet.getString("name"));
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
         return company;
     }
 

@@ -1,7 +1,7 @@
 package com.management.project.fabrica;
 
-import com.management.project.connection.ConnectionDB;
-import com.management.project.connection.ConnectionJdbs;
+import com.management.project.connection.ConnectionJdbc;
+import com.management.project.connection.ConnectionJdbcImpl;
 
 /**
  * @author Yurii Salimov (yuriy.alex.salimov@gmail.com)
@@ -15,21 +15,21 @@ public final class FactoryConnection {
 
     private final static String DEFAULT_PASSWORD = "admin";
 
-    private static ConnectionJdbs connectionJdbs;
+    private static ConnectionJdbcImpl connectionJdbcImpl;
 
     private FactoryConnection() {
 
     }
 
-    public static ConnectionDB getConnectionJdbs() {
-        if (connectionJdbs == null) {
+    public static ConnectionJdbc getConnectionJdbcImpl() {
+        if (connectionJdbcImpl == null) {
             initConnectionJdbs();
         }
-        return connectionJdbs;
+        return connectionJdbcImpl;
     }
 
     private static void initConnectionJdbs() {
-        connectionJdbs = new ConnectionJdbs(
+        connectionJdbcImpl = new ConnectionJdbcImpl(
                 DEFAULT_DATABASE_NAME,
                 DEFAULT_USERNAME,
                 DEFAULT_PASSWORD

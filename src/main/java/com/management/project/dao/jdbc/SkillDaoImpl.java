@@ -1,6 +1,6 @@
-package com.management.project.dao.impl;
+package com.management.project.dao.jdbc;
 
-import com.management.project.connection.ConnectionDB;
+import com.management.project.connection.ConnectionJdbc;
 import com.management.project.dao.SkillDao;
 import com.management.project.entity.Developer;
 import com.management.project.entity.Skill;
@@ -20,12 +20,12 @@ public final class SkillDaoImpl extends ModelDaoImpl<Skill> implements SkillDao 
         super(connection);
     }
 
-    public SkillDaoImpl(ConnectionDB connectionDB) throws SQLException {
-        super(connectionDB.getConnection());
+    public SkillDaoImpl(ConnectionJdbc connectionJdbc) {
+        super(connectionJdbc.getConnection());
     }
 
     @Override
-    public void addDeveloperSkills(Developer developer) throws SQLException {
+    public void addDeveloperSkills(Developer developer) {
         String sql = "INSERT INTO developers_skills (developer_id, skill_id) VALUES(?, ?)";
         try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
             for (Skill skill : developer.getSkills()) {
@@ -33,11 +33,13 @@ public final class SkillDaoImpl extends ModelDaoImpl<Skill> implements SkillDao 
                 statement.setLong(2, skill.getId());
                 statement.executeUpdate();
             }
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
         }
     }
 
     @Override
-    public Collection<Skill> getDeveloperSkills(Developer developer) throws SQLException {
+    public Collection<Skill> getDeveloperSkills(Developer developer) {
         String sql = "SELECT * FROM developers_skills WHERE developer_id = ?";
         List<Skill> models = new ArrayList<>();
         try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
@@ -46,15 +48,21 @@ public final class SkillDaoImpl extends ModelDaoImpl<Skill> implements SkillDao 
             while (resultSet.next()) {
                 models.add(this.get(resultSet.getLong("skill_id")));
             }
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
         }
         return models;
     }
 
     @Override
-    protected Skill prepare(ResultSet resultSet) throws SQLException {
+    protected Skill prepare(ResultSet resultSet) {
         Skill skill = new Skill();
-        skill.setId(resultSet.getLong("id"));
-        skill.setName(resultSet.getString("name"));
+        try {
+            skill.setId(resultSet.getLong("id"));
+            skill.setName(resultSet.getString("name"));
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
         return skill;
     }
 

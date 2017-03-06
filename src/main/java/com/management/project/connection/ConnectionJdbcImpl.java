@@ -8,7 +8,7 @@ import java.sql.SQLException;
  * @author Yurii Salimov (yuriy.alex.salimov@gmail.com)
  * @version 1.0
  */
-public final class ConnectionJdbs implements ConnectionDB {
+public final class ConnectionJdbcImpl implements ConnectionJdbc {
 
     private String username;
 
@@ -22,14 +22,14 @@ public final class ConnectionJdbs implements ConnectionDB {
 
     private Connection connection;
 
-    public ConnectionJdbs(String databaseName, String username, String password) {
+    public ConnectionJdbcImpl(String databaseName, String username, String password) {
         this.databaseName = databaseName;
         this.username = username;
         this.password = password;
     }
 
     @Override
-    public Connection getConnection() throws SQLException {
+    public Connection getConnection() {
         if (this.connection == null) {
             initDataSource();
         }
@@ -37,9 +37,13 @@ public final class ConnectionJdbs implements ConnectionDB {
     }
 
     @Override
-    public void close() throws SQLException {
+    public void close() {
         if (this.connection != null) {
-            this.connection.close();
+            try {
+                this.connection.close();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 
@@ -83,12 +87,16 @@ public final class ConnectionJdbs implements ConnectionDB {
         this.username = username;
     }
 
-    private void initDataSource() throws SQLException {
-        this.connection = DriverManager.getConnection(getDatabaseUrl(), this.username, this.password);
+    private void initDataSource() {
+        try {
+            this.connection = DriverManager.getConnection(getDatabaseUrl(), this.username, this.password);
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     private String getDatabaseUrl() {
         return "jdbc:mysql://localhost:3306/" + this.databaseName +
-                "?autoReconnect="+ this.autoReconnect + "&useSSL=" + this.useSSL;
+                "?autoReconnect=" + this.autoReconnect + "&useSSL=" + this.useSSL;
     }
 }

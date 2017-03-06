@@ -1,10 +1,8 @@
-package com.management.project.dao.impl;
+package com.management.project.dao.jdbc;
 
-import com.management.project.connection.ConnectionDB;
+import com.management.project.connection.ConnectionJdbc;
 import com.management.project.dao.ModelDao;
-import com.management.project.entity.Company;
 import com.management.project.entity.Model;
-import com.management.project.entity.Skill;
 
 import java.sql.*;
 import java.util.*;
@@ -21,24 +19,24 @@ public abstract class ModelDaoImpl<T extends Model> implements ModelDao<T> {
         this.connection = connection;
     }
 
-    public ModelDaoImpl(ConnectionDB connectionDB) throws SQLException {
-        this(connectionDB.getConnection());
+    public ModelDaoImpl(ConnectionJdbc connectionJdbc) {
+        this(connectionJdbc.getConnection());
     }
 
     @Override
-    public void addAll(Collection<T> models) throws SQLException {
+    public void addAll(Collection<T> models) {
         for (T model : models) {
             add(model);
         }
     }
 
     @Override
-    public void remove(T model) throws SQLException {
+    public void remove(T model) {
         remove(model.getId());
     }
 
     @Override
-    public T get(long id) throws SQLException {
+    public T get(long id) {
         String sql = "SELECT * FROM " + getTableName() + " WHERE id = ?";
         T model = null;
         try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
@@ -47,12 +45,14 @@ public abstract class ModelDaoImpl<T extends Model> implements ModelDao<T> {
             if (resultSet.next()) {
                 model = prepare(resultSet);
             }
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
         }
         return model;
     }
 
     @Override
-    public Collection<T> getAll() throws SQLException {
+    public Collection<T> getAll() {
         String sql = "SELECT * FROM " + getTableName();
         List<T> models = new ArrayList<>();
         try (Statement statement = this.connection.createStatement()) {
@@ -60,50 +60,56 @@ public abstract class ModelDaoImpl<T extends Model> implements ModelDao<T> {
             while (resultSet.next()) {
                 models.add(prepare(resultSet));
             }
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
         }
         return models;
     }
 
     @Override
-    public void add(T model) throws SQLException {
+    public void add(T model) {
         String sql = "INSERT INTO " + getTableName() + " (name) VALUES (?)";
         try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
             statement.setString(1, model.getName());
             statement.executeUpdate();
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
         }
     }
 
     @Override
-    public void update(T model) throws SQLException {
+    public void update(T model) {
         String sql = "UPDATE " + getTableName() + " SET name = ? WHERE id = ?";
         try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
             statement.setString(1, model.getName());
             statement.setLong(2, model.getId());
             statement.executeUpdate();
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
         }
     }
 
     @Override
-    public void remove(long id) throws SQLException {
+    public void remove(long id) {
         String sql = "DELETE FROM " + getTableName() + " WHERE id = ?";
         try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
             statement.setLong(1, id);
             statement.executeUpdate();
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
         }
     }
 
     @Override
-    public boolean exist(T model) throws SQLException {
+    public boolean exist(T model) {
         String sql = "SELECT EXISTS (SELECT * FROM " + getTableName() + " WHERE id = ?)";
         boolean result;
         try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
             statement.setLong(1, model.getId());
             ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                result = resultSet.getBoolean(1);
-            } else {
-                result = false;
-            }
+            result = resultSet.next() && resultSet.getBoolean(1);
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
         }
         return result;
     }

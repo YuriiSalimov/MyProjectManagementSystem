@@ -1,5 +1,9 @@
 package com.management.project.entity;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
+import javax.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -11,26 +15,47 @@ import java.util.Set;
  * @author Yurii Salimov (yuriy.alex.salimov@gmail.com)
  * @version 1.0
  */
+@Entity
+@Table(name = "developers")
 public final class Developer extends Model {
 
     /**
      * The developer salary.
      */
+    @Column(name = "salary", nullable = false)
     private int salary;
 
     /**
      * The company, which employs this developer.
      */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(
+            name = "company_id",
+            referencedColumnName = "id"
+    )
+    @Fetch(FetchMode.JOIN)
     private Company company;
 
     /**
      * The project, on which the developer is working.
      */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(
+            name = "project_id",
+            referencedColumnName = "id"
+    )
+    @Fetch(FetchMode.JOIN)
     private Project project;
 
     /**
      * The developer skills.
      */
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "developers_skills",
+            joinColumns = @JoinColumn(name = "developer_id"),
+            inverseJoinColumns = @JoinColumn(name = "skill_id")
+    )
     private Set<Skill> skills = new HashSet<>();
 
     /**

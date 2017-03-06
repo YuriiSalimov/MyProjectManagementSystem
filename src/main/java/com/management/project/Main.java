@@ -1,5 +1,6 @@
 package com.management.project;
 
+import com.management.project.connection.ConnectionType;
 import com.management.project.controller.MainController;
 
 /**
@@ -10,7 +11,7 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            new MainController().startMenu();
+            new MainController(ConnectionType.HIBERNATE).startMenu();
         } catch (Exception ex) {
             ex.printStackTrace();
         }

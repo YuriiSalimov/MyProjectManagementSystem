@@ -1,5 +1,8 @@
 package com.management.project.entity;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
 /**
  * The class implements a set of standard methods for working
  * with entity of the Skill.
@@ -7,6 +10,8 @@ package com.management.project.entity;
  * @author Yurii Salimov (yuriy.alex.salimov@gmail.com)
  * @version 1.0
  */
+@Entity
+@Table(name = "skills")
 public final class Skill extends Model {
 
     /**

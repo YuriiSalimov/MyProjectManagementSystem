@@ -1,11 +1,8 @@
 package com.management.project.fabrica;
 
-import com.management.project.connection.ConnectionDB;
-import com.management.project.connection.ConnectionJdbs;
+import com.management.project.connection.ConnectionHibernateImpl;
+import com.management.project.connection.ConnectionType;
 import com.management.project.dao.*;
-import com.management.project.dao.impl.*;
-
-import java.sql.SQLException;
 
 /**
  * @author Yurii Salimov (yuriy.alex.salimov@gmail.com)
@@ -27,67 +24,118 @@ public final class FactoryDao {
 
     }
 
-    public static CompanyDao getCompanyDao() throws SQLException {
+    public static CompanyDao getCompanyDao(final ConnectionType type) {
         if (companyDao == null) {
-            initCompanyDao();
+            initCompanyDao(type);
         }
         return companyDao;
     }
 
-    public static CustomerDao getCustomerDao() throws SQLException {
+    public static CustomerDao getCustomerDao(final ConnectionType type) {
         if (customerDao == null) {
-            initCustomerDao();
+            initCustomerDao(type);
         }
         return customerDao;
     }
 
-    public static DeveloperDao getDeveloperDao() throws SQLException {
+    public static DeveloperDao getDeveloperDao(final ConnectionType type) {
         if (developerDao == null) {
-            initDeveloperDao();
+            initDeveloperDao(type);
         }
         return developerDao;
     }
 
-    public static ProjectDao getProjectDao() throws SQLException {
+    public static ProjectDao getProjectDao(final ConnectionType type) {
         if (projectDao == null) {
-            initProjectDao();
+            initProjectDao(type);
         }
         return projectDao;
     }
 
-    public static SkillDao getSkillDao() throws SQLException {
+    public static SkillDao getSkillDao(final ConnectionType type) {
         if (skillDao == null) {
-            initSkillDao();
+            initSkillDao(type);
         }
         return skillDao;
     }
 
-    private static void initCompanyDao() throws SQLException {
-        companyDao = new CompanyDaoImpl(FactoryConnection.getConnectionJdbs());
+    private static void initCompanyDao(final ConnectionType type) {
+        switch (type) {
+            case JDBC:
+                companyDao = new com.management.project.dao.jdbc.CompanyDaoImpl(
+                        FactoryConnection.getConnectionJdbcImpl()
+                );
+                break;
+            case HIBERNATE:
+                companyDao = new com.management.project.dao.hibernate.CompanyDaoImpl(
+                        new ConnectionHibernateImpl().getEntityManager()
+                );
+                break;
+        }
     }
 
-    private static void initCustomerDao() throws SQLException {
-        customerDao = new CustomerDaoImpl(FactoryConnection.getConnectionJdbs());
+    private static void initCustomerDao(final ConnectionType type) {
+        switch (type) {
+            case JDBC:
+                customerDao = new com.management.project.dao.jdbc.CustomerDaoImpl(
+                        FactoryConnection.getConnectionJdbcImpl()
+                );
+                break;
+            case HIBERNATE:
+                customerDao = new com.management.project.dao.hibernate.CustomerDaoImpl(
+                        new ConnectionHibernateImpl().getEntityManager()
+                );
+                break;
+        }
     }
 
-    private static void initDeveloperDao() throws SQLException {
-        developerDao = new DeveloperDaoImpl(
-                FactoryConnection.getConnectionJdbs(),
-                getCompanyDao(),
-                getProjectDao(),
-                getSkillDao()
-        );
+    private static void initDeveloperDao(final ConnectionType type) {
+        switch (type) {
+            case JDBC:
+                developerDao = new com.management.project.dao.jdbc.DeveloperDaoImpl(
+                        FactoryConnection.getConnectionJdbcImpl().getConnection(),
+                        getCompanyDao(type),
+                        getProjectDao(type),
+                        getSkillDao(type)
+                );
+                break;
+            case HIBERNATE:
+                developerDao = new com.management.project.dao.hibernate.DeveloperDaoImpl(
+                        new ConnectionHibernateImpl().getEntityManager()
+                );
+                break;
+        }
     }
 
-    private static void initProjectDao() throws SQLException {
-        projectDao = new ProjectDaoImpl(
-                FactoryConnection.getConnectionJdbs(),
-                getCompanyDao(),
-                getCustomerDao()
-        );
+    private static void initProjectDao(final ConnectionType type) {
+        switch (type) {
+            case JDBC:
+                projectDao = new com.management.project.dao.jdbc.ProjectDaoImpl(
+                        FactoryConnection.getConnectionJdbcImpl().getConnection(),
+                        getCompanyDao(type),
+                        getCustomerDao(type)
+                );
+                break;
+            case HIBERNATE:
+                projectDao = new com.management.project.dao.hibernate.ProjectDaoImpl(
+                        new ConnectionHibernateImpl().getEntityManager()
+                );
+                break;
+        }
     }
 
-    private static void initSkillDao() throws SQLException {
-        skillDao = new SkillDaoImpl(FactoryConnection.getConnectionJdbs());
+    private static void initSkillDao(final ConnectionType type) {
+        switch (type) {
+            case JDBC:
+                skillDao = new com.management.project.dao.jdbc.SkillDaoImpl(
+                        FactoryConnection.getConnectionJdbcImpl().getConnection()
+                );
+                break;
+            case HIBERNATE:
+                skillDao = new com.management.project.dao.hibernate.SkillDaoImpl(
+                        new ConnectionHibernateImpl().getEntityManager()
+                );
+                break;
+        }
     }
 }
